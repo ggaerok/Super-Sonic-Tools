@@ -99,10 +99,13 @@ h1{
 }
 .tile:hover,.tile:active{transform:translateY(-2px);border-color:var(--accent)}
 .orb{
-  width:46px;height:46px;border-radius:50%;
-  background:
-    radial-gradient(circle at 32% 28%, color-mix(in srgb,var(--c) 45%,#fff) 0%, var(--c) 48%, color-mix(in srgb,var(--c) 35%,#000) 100%);
-  box-shadow:0 0 26px color-mix(in srgb,var(--c) 38%,transparent);
+  width:54px;height:54px;border-radius:50%;
+  display:grid;place-items:center;
+  font-size:30px;line-height:1;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb,var(--c) 28%,transparent) 0%, color-mix(in srgb,var(--c) 8%,transparent) 70%);
+  border:1px solid color-mix(in srgb,var(--c) 40%,transparent);
+  box-shadow:0 0 26px color-mix(in srgb,var(--c) 30%,transparent);
 }
 .meta{min-width:0}
 .name{
@@ -182,10 +185,10 @@ body{margin:0}
 <script>
 /* 박스 버튼 데이터: 새 링크는 이 배열 끝에 한 줄씩 추가하면 아래로 계속 늘어납니다. */
 var TOOLS = [
-  { name: "우주 메시지 sol",  url: "https://nysc-space-message-sol.vercel.app", color: "var(--c-ember)" },
-  { name: "우주 메시지",       url: "https://nysc-space-message.vercel.app",     color: "var(--c-lagoon)" },
-  { name: "플라네타리움",      url: "https://nysc-planetarium.vercel.app",       color: "var(--c-lilac)" },
-  { name: "로켓 45 sol",      url: "https://20260716.vercel.app",               color: "var(--c-sun)" }
+  { name: "우주 메시지 sol",  url: "https://nysc-space-message-sol.vercel.app", icon: "💬", color: "var(--c-ember)" },
+  { name: "우주 메시지",       url: "https://nysc-space-message.vercel.app",     icon: "✉️", color: "var(--c-lagoon)" },
+  { name: "플라네타리움",      url: "https://nysc-planetarium.vercel.app",       icon: "🌍", color: "var(--c-lilac)" },
+  { name: "로켓 45 sol",      url: "https://20260716.vercel.app",               icon: "🚀", color: "var(--c-sun)" }
 ];
 
 var grid = document.getElementById("grid");
@@ -208,7 +211,8 @@ TOOLS.forEach(function(t){
   a.className = "tile";
   a.href = t.url; a.target = "_blank"; a.rel = "noopener noreferrer";
   a.setAttribute("aria-label", t.name + " 열기");
-  var orb = div("orb"); orb.style.setProperty("--c", t.color);
+  var orb = div("orb", t.icon); orb.style.setProperty("--c", t.color);
+  orb.setAttribute("aria-hidden", "true");
   var meta = div("meta");
   meta.appendChild(div("name", t.name));
   meta.appendChild(div("host", host(t.url)));

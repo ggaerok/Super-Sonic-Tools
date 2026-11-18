@@ -206,20 +206,25 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   background:rgba(4,7,16,.78);
 }
+.modal{overflow:auto}
 .modal .card{
-  width:min(100%,320px);
+  width:fit-content;
+  max-width:100%;
+  margin:auto;
   display:grid;
   justify-items:center;
-  gap:12px;
-  padding:20px 18px 16px;
+  gap:10px;
+  padding:14px 14px 12px;
   border-radius:20px;
   background:var(--surface);
   border:1px solid var(--line);
   text-align:center;
 }
 .modal h2{margin:0;font-size:16px;font-weight:700}
+/* 최대 900px. 화면이 작으면 세로·가로에 맞춰 줄어듭니다. */
 .modal img{
-  width:min(70vw,240px);
+  width:min(900px,calc(100vh - 190px),calc(100vw - 64px));
+  width:min(900px,calc(100dvh - 190px),calc(100vw - 64px));
   height:auto;
   aspect-ratio:1/1;
   border-radius:10px;
@@ -331,7 +336,7 @@ var TOOLS = [
 
 /* QR 그림: 게임실행 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
 var QR_IMAGES = {
-  "https://nyscgame1.vercel.app/play": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQMAAADS6sNKAAAABlBMVEULECH///+3cDDHAAAByUlEQVR42u2bW46DMAxFrWEBLImtsyQWgJSCH4nhr9KMRo5OPlAL96unjq/tIO2rtQt69OjRo0eP/pf04mu57qynyNZO/9qOeLap/ke+W+j/V+98FV47lov0qtgXuyfbsbQkgW9RvneY3iz1kwbxdfu+KPPADd/6fNtpe7FGst2D7zR8r61ZLHQ968J3qvx7bc3NgtgdGPl3Br7dP0cSHhf8c32+Y6WqSJ3Wu57i9yxeH/WCyIokq4n7/wC+NePXCyKPX7PO0p3WiGT41uXrJvq2Vhqwb6cF38L59+hO647kG21qbWhPC76l47elXKuQvdNxPFI0fIvyFe9KZtccJnr0tOBb2D97ryqFro+T1EmzP9fme/qu7HzDWu2j5wHf2v2NGB31TseaIRO/leNXUv0rVh8NfxVJGL6F+eb+1SiC86QQvoXzr44R1j5pWMM/j9KX/bm4f85dqzjEYYv9eQZ/9aiUHoUT/avy+dfWEknYjl5JOr8B3/L7s53VeM3322PIAN/C/urZsEpHN3rPA771+dpUP54m3PCdga8N9FsMCfenD4PvRPm3tyaJ32n8s5e+o8kRLzEQv1PUv7x/hx49evTo0f+9/gMIIa+LCLfNJgAAAABJRU5ErkJggg=="
+  "https://nyscgame1.vercel.app/play": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC3ElEQVR42u3dvW6DMBSA0au+/zunQ6UI+f7YIVHU4TBEbSCcgeWTwSYe392Cx+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/3OS+q7bnreUA++OQMf9tPfHfj8Xg8Ho/H4/0vb+3PNU9Tdl7/Xb4czqA/eTwej8fj8Xhdf153LZ/5yyUyuzPoTx6Px+PxeDzeq/05DISWpao/eTwej8fj8Xj3+nP5snvUU3/yeDwej8fj8W70Z/nN8MfhGfQnj8fj8Xg8Hi/3Z3nAS58z4frxeDwej8fj6c/9Ik3p4KVOD8+jP3k8Ho/H4/H05+H6S8MN90jPfJbJqj95PB6Px+PxeHNwbkc7y/OUR+pPHo/H4/F4PN7cn9GMag4T5Id5SfqTx+PxeDwej1f2ZzluudRmHKza1FWo68fj8Xg8Ho+nP7sFl64H5F/lvV276k8ej8fj8Xg83tCf15jcPs9ZjnxG874k/cnj8Xg8Ho+nP7uxym2CLpna/cT9dx6Px+PxeDzetj+ve/Pf3duRliIN79/k8Xg8Ho/H4439OU+En2cqdS1q/JPH4/F4PB6P1/VnV5vL8fnneVe3BL3rx+PxeDwej6c/55WXuvvpXYt246L6k8fj8Xg8Ho8X40qe0Sy+FOPoqPe/83g8Ho/H4/Fe6s9hLaZhqlE+bUm4fjwej8fj8Xj6c7tFtS5TjGs3hfcf8Xg8Ho/H4/F2/TkfEP0L359HRj/yqT95PB6Px+PxeDHef59XpB/W+Yxm8pH+5PF4PB6Px9Ofw/yj7buNonn483pAeP6Tx+PxeDwej3erP09qc7twvevH4/F4PB6Ppz9P+rNb2DPStKPh/PqTx+PxeDweT3++//xnOSm+K1jXj8fj8Xg8Hk9/bgcwI91S784wTz7Snzwej8fj8Xj68/Hdjcfj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4PB6P9972C5GugavpvP8IAAAAAElFTkSuQmCC"
 };
 
 /* 바로가기 8칸: url이 없으면 '준비' 칸으로 표시됩니다. */

@@ -151,6 +151,93 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   border:1px solid color-mix(in srgb,var(--c) 40%,transparent);
   box-shadow:0 0 18px color-mix(in srgb,var(--c) 28%,transparent);
 }
+/* 한 박스를 3칸으로 나눈 버튼 */
+.tile.split{
+  padding:0;
+  gap:0;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  align-items:stretch;
+  overflow:hidden;
+}
+.tile.split:hover,.tile.split:active{transform:none}
+.seg{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:8px 2px;
+  margin:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:var(--fg);
+  font:inherit;
+  cursor:pointer;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.seg + .seg{border-left:1px solid var(--line)}
+.seg:hover,.seg:active{background:color-mix(in srgb,var(--c) 16%,transparent)}
+.seg:focus-visible{outline-offset:-4px}
+.seg .e{
+  font-size:clamp(18px,5vw,22px);
+  line-height:1;
+  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+}
+.seg .t{
+  font-size:clamp(9.5px,2.8vw,11.5px);
+  font-weight:700;
+  line-height:1.15;
+  letter-spacing:-.03em;
+  white-space:nowrap;
+}
+
+/* QR 팝업 */
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
+  background:rgba(4,7,16,.78);
+}
+.modal .card{
+  width:min(100%,320px);
+  display:grid;
+  justify-items:center;
+  gap:12px;
+  padding:20px 18px 16px;
+  border-radius:20px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  text-align:center;
+}
+.modal h2{margin:0;font-size:16px;font-weight:700}
+.modal img{
+  width:min(70vw,240px);
+  height:auto;
+  aspect-ratio:1/1;
+  border-radius:10px;
+  background:#fff;
+  image-rendering:pixelated;
+}
+.modal .u{margin:0;font-family:var(--font-mono);font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.modal .close{
+  font:inherit;
+  font-weight:700;
+  padding:9px 24px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:transparent;
+  color:var(--fg);
+  cursor:pointer;
+}
+.modal .close:hover{border-color:var(--accent)}
 .meta{min-width:0;flex:1}
 .name{
   font-weight:700;
@@ -214,6 +301,15 @@ body{margin:0}
   <footer>수퍼소닉 도구 모음</footer>
 </div>
 
+<div class="modal" id="qrm" hidden role="dialog" aria-modal="true" aria-labelledby="qrt">
+  <div class="card">
+    <h2 id="qrt">QR코드</h2>
+    <img id="qri" alt="QR 코드" width="240" height="240">
+    <p class="u" id="qru"></p>
+    <button type="button" class="close" id="qrc">닫기</button>
+  </div>
+</div>
+
 <script>
 /* 박스 버튼 데이터: 새 링크는 이 배열 끝에 한 줄씩 추가하면 아래로 계속 늘어납니다. */
 var TOOLS = [
@@ -225,8 +321,18 @@ var TOOLS = [
   { name: "회전하는 물체 그리고 공전 기록",        url: "https://nysc-revolution.vercel.app",        icon: "🏆", color: "var(--c-rose)" },
   { name: "팀 뽑기 게임",       url: "https://nyscdart.vercel.app",               icon: "🎯", color: "var(--c-mint)" },
   { name: "좌석배치표",         url: "https://nyscseatingchart.vercel.app",       icon: "🪑", color: "var(--c-sand)" },
-  { name: "게임 1",            url: "https://nyscgame1.vercel.app",              icon: "🎮", color: "var(--c-pink)" }
+  /* parts가 있으면 한 박스가 여러 칸으로 나뉩니다. qrOf는 QR로 만들 칸의 번호(0부터)입니다. */
+  { name: "게임 1", color: "var(--c-pink)", parts: [
+    { name: "게임관리", icon: "⚙️", url: "https://nyscgame1.vercel.app" },
+    { name: "게임실행", icon: "▶️", url: "https://nyscgame1.vercel.app/play" },
+    { name: "QR코드",   icon: "📱", qrOf: 1 }
+  ] }
 ];
+
+/* QR 그림: 게임실행 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
+var QR_IMAGES = {
+  "https://nyscgame1.vercel.app/play": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQMAAADS6sNKAAAABlBMVEULECH///+3cDDHAAAByUlEQVR42u2bW46DMAxFrWEBLImtsyQWgJSCH4nhr9KMRo5OPlAL96unjq/tIO2rtQt69OjRo0eP/pf04mu57qynyNZO/9qOeLap/ke+W+j/V+98FV47lov0qtgXuyfbsbQkgW9RvneY3iz1kwbxdfu+KPPADd/6fNtpe7FGst2D7zR8r61ZLHQ968J3qvx7bc3NgtgdGPl3Br7dP0cSHhf8c32+Y6WqSJ3Wu57i9yxeH/WCyIokq4n7/wC+NePXCyKPX7PO0p3WiGT41uXrJvq2Vhqwb6cF38L59+hO647kG21qbWhPC76l47elXKuQvdNxPFI0fIvyFe9KZtccJnr0tOBb2D97ryqFro+T1EmzP9fme/qu7HzDWu2j5wHf2v2NGB31TseaIRO/leNXUv0rVh8NfxVJGL6F+eb+1SiC86QQvoXzr44R1j5pWMM/j9KX/bm4f85dqzjEYYv9eQZ/9aiUHoUT/avy+dfWEknYjl5JOr8B3/L7s53VeM3322PIAN/C/urZsEpHN3rPA771+dpUP54m3PCdga8N9FsMCfenD4PvRPm3tyaJ32n8s5e+o8kRLzEQv1PUv7x/hx49evTo0f+9/gMIIa+LCLfNJgAAAABJRU5ErkJggg=="
+};
 
 /* 바로가기 8칸: url이 없으면 '준비' 칸으로 표시됩니다. */
 var QUICK = [
@@ -274,8 +380,54 @@ function svgArrow(){
 }
 function div(cls, text){ var d = document.createElement("div"); d.className = cls; if (text != null) d.textContent = text; return d; }
 
+/* QR 팝업 */
+var qrm = document.getElementById("qrm"), qri = document.getElementById("qri"),
+    qru = document.getElementById("qru"), qrt = document.getElementById("qrt"),
+    qrc = document.getElementById("qrc"), qrFrom = null;
+function openQr(url, title, from){
+  qrFrom = from || null;
+  qrt.textContent = title;
+  qru.textContent = url;
+  if (QR_IMAGES[url]) { qri.src = QR_IMAGES[url]; qri.hidden = false; }
+  else { qri.removeAttribute("src"); qri.hidden = true; }
+  qrm.hidden = false;
+  qrc.focus();
+}
+function closeQr(){
+  qrm.hidden = true;
+  if (qrFrom) { try { qrFrom.focus(); } catch (e) {} }
+}
+qrc.addEventListener("click", closeQr);
+qrm.addEventListener("click", function(ev){ if (ev.target === qrm) closeQr(); });
+document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !qrm.hidden) closeQr(); });
+
 TOOLS.forEach(function(t){
   var li = document.createElement("li");
+  if (t.parts){
+    var box = div("tile split"); box.style.setProperty("--c", t.color);
+    t.parts.forEach(function(p){
+      var el;
+      if (p.qrOf != null){
+        var target = t.parts[p.qrOf];
+        el = document.createElement("button");
+        el.type = "button";
+        el.setAttribute("aria-label", target.name + " " + p.name + " 보기");
+        el.addEventListener("click", function(){ openQr(target.url, target.name + " " + p.name, el); });
+      } else {
+        el = document.createElement("a");
+        el.href = p.url; el.target = "_blank"; el.rel = "noopener noreferrer";
+        el.setAttribute("aria-label", t.name + " " + p.name + " 열기");
+      }
+      el.className = "seg";
+      var e = document.createElement("span"); e.className = "e"; e.textContent = p.icon; e.setAttribute("aria-hidden", "true");
+      var s = document.createElement("span"); s.className = "t"; s.textContent = p.name;
+      el.appendChild(e); el.appendChild(s);
+      box.appendChild(el);
+    });
+    li.appendChild(box);
+    grid.appendChild(li);
+    return;
+  }
   var a = document.createElement("a");
   a.className = "tile";
   a.href = t.url; a.target = "_blank"; a.rel = "noopener noreferrer";

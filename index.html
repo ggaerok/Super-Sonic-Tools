@@ -158,18 +158,38 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   gap:0;
   display:grid;
   grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:18px minmax(0,1fr);
   align-items:stretch;
   overflow:hidden;
 }
 .tile.split:hover,.tile.split:active{transform:none}
+/* 윗부분 제목 줄: 박스 크기는 그대로 두고 안쪽 위를 나눠 씁니다 */
+.head{
+  grid-column:1 / -1;
+  display:flex;
+  align-items:center;
+  padding:0 10px;
+  border-bottom:1px solid var(--line);
+  background:color-mix(in srgb,var(--c) 12%,transparent);
+  color:var(--c);
+  font-family:var(--font-display);
+  font-stretch:112%;
+  font-weight:700;
+  font-size:10.5px;
+  line-height:1;
+  letter-spacing:.03em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .seg{
   min-width:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:3px;
-  padding:8px 2px;
+  gap:2px;
+  padding:3px 2px;
   margin:0;
   border:0;
   border-radius:0;
@@ -184,35 +204,16 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .seg:hover,.seg:active{background:color-mix(in srgb,var(--c) 16%,transparent)}
 .seg:focus-visible{outline-offset:-4px}
 .seg .e{
-  font-size:clamp(18px,5vw,22px);
+  font-size:clamp(16px,4.6vw,20px);
   line-height:1;
   font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
 }
 .seg .t{
-  font-size:clamp(9.5px,2.8vw,11.5px);
+  font-size:clamp(9.5px,2.7vw,11px);
   font-weight:700;
   line-height:1.15;
   letter-spacing:-.03em;
   white-space:nowrap;
-}
-
-/* 3칸 버튼이 여러 개일 때 구분하는 이름표 */
-.has-tag{position:relative}
-.tag{
-  position:absolute;
-  top:-7px;
-  left:14px;
-  z-index:1;
-  padding:0 7px;
-  border-radius:999px;
-  background:var(--surface-2);
-  border:1px solid var(--line);
-  font-family:var(--font-mono);
-  font-size:9.5px;
-  line-height:14px;
-  letter-spacing:.06em;
-  color:var(--muted);
-  pointer-events:none;
 }
 
 /* QR 팝업 */
@@ -347,12 +348,12 @@ var TOOLS = [
   { name: "팀 뽑기 게임",       url: "https://nyscdart.vercel.app",               icon: "🎯", color: "var(--c-mint)" },
   { name: "좌석배치표",         url: "https://nyscseatingchart.vercel.app",       icon: "🪑", color: "var(--c-sand)" },
   /* parts가 있으면 한 박스가 여러 칸으로 나뉩니다. qrOf는 QR로 만들 칸의 번호(0부터)입니다. */
-  { name: "게임 1", color: "var(--c-pink)", parts: [
+  { name: "Cosmos Ball", color: "var(--c-pink)", parts: [
     { name: "게임관리", icon: "⚙️", url: "https://nyscgame1.vercel.app" },
     { name: "게임실행", icon: "▶️", url: "https://nyscgame1.vercel.app/play" },
     { name: "QR코드",   icon: "📱", qrOf: 1 }
   ] },
-  { name: "게임 2", color: "var(--c-lime)", parts: [
+  { name: "Solar System", color: "var(--c-lime)", parts: [
     { name: "게임관리", icon: "⚙️", url: "https://nyscgame2.vercel.app/" },
     { name: "게임진행", icon: "▶️", url: "https://nyscgame2.vercel.app/play" },
     { name: "QR코드",   icon: "📱", qrOf: 1 }
@@ -436,6 +437,7 @@ TOOLS.forEach(function(t){
   var li = document.createElement("li");
   if (t.parts){
     var box = div("tile split"); box.style.setProperty("--c", t.color);
+    box.appendChild(div("head", t.name));
     t.parts.forEach(function(p){
       var el;
       if (p.qrOf != null){
@@ -443,7 +445,7 @@ TOOLS.forEach(function(t){
         el = document.createElement("button");
         el.type = "button";
         el.setAttribute("aria-label", target.name + " " + p.name + " 보기");
-        el.addEventListener("click", function(){ openQr(target.url, target.name + " " + p.name, el); });
+        el.addEventListener("click", function(){ openQr(target.url, t.name + " " + p.name, el); });
       } else {
         el = document.createElement("a");
         el.href = p.url; el.target = "_blank"; el.rel = "noopener noreferrer";
@@ -455,9 +457,7 @@ TOOLS.forEach(function(t){
       el.appendChild(e); el.appendChild(s);
       box.appendChild(el);
     });
-    li.className = "has-tag";
     li.appendChild(box);
-    li.appendChild(div("tag", t.name));
     grid.appendChild(li);
     return;
   }

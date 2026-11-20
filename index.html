@@ -142,6 +142,9 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   transition:transform .16s ease,border-color .16s ease;
 }
 .tile:hover,.tile:active{transform:translateY(-2px);border-color:var(--accent)}
+.tile.ready{opacity:.55;cursor:default}
+.tile.ready:hover,.tile.ready:active{transform:none;border-color:var(--line)}
+.tile.ready .orb{--c:var(--muted);filter:grayscale(1)}
 .orb{
   flex:none;
   width:42px;height:42px;border-radius:50%;
@@ -173,6 +176,7 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   background:color-mix(in srgb,var(--c) 10%,transparent);
   overflow:hidden;
 }
+.head .ttl{font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:.01em;color:var(--c);white-space:nowrap;line-height:1}
 .head .logo{display:block;height:22px;width:auto;aspect-ratio:var(--ar)}
 .seg{
   min-width:0;
@@ -345,11 +349,18 @@ var TOOLS = [
     { name: "게임관리", url: "https://nyscgame2.vercel.app/" },
     { name: "게임진행", url: "https://nyscgame2.vercel.app/play" },
     { name: "QR코드",   qrOf: 1 }
-  ] }
+  ] },
+  { name: "GPS Viewer", color: "var(--c-sky)", parts: [
+    { name: "운영관리", url: "https://nyscgps.vercel.app/" },
+    { name: "GPS실행",  url: "https://nyscgps.vercel.app/location" },
+    { name: "QR코드",   qrOf: 1 }
+  ] },
+  { name: "준비중", icon: "⏳", ready: true, color: "var(--muted)" }
 ];
 
 /* QR 그림: 게임 진행(실행) 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
 var QR_IMAGES = {
+  "https://nyscgps.vercel.app/location": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC1klEQVR42u3dMW4DMQwEQCL//7NTJThY5EpnB0aKucIIAvumULMQKaoen32Kx+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/3d151z/MPfv75+3n92vYNX/XZh8fj8Xg8Ho/3v7zn/Lmmzesf62/P3yB/8ng8Ho/H4/Ha9LjGyzZzrtE0vEH+5PF4PB6Px+Pdyp/Xyntbhc9vkD95PB6Px+PxeHfzZyjNh6ZQ+ZPH4/F4PB6Pd7f/s/1JzfV3/Z88Ho/H4/F4vMP82X7h1qfz7zwej8fj8Xi8w/w5Dmnq+j+f9jYPX2X9eDwej8fj8eTPw2r7Scl+G26tH4/H4/F4PJ782Y6X3x44ao8gra9Vf+fxeDwej8fjbevv14SZbziaRjCpv/N4PB6Px+Px7l6vud3eDH2hNRyHt348Ho/H4/F48mfbAtrO9qyu8p53UOVPHo/H4/F4PF7F+UvTGM+Kt8OvGVX/J4/H4/F4PB7vcP5nuNUohNXwZfmTx+PxeDwej1e7+nsNg+XzXfC5Om/9eDwej8fj8eTPaQu0PY60Ldnb/+TxeDwej8fjvVB/D9e4VzedKVTt5U8ej8fj8Xg83vYyo9r1dlZ3Uj4fYpI/eTwej8fj8eTP6Tz71MZZXQvotNtZ+j95PB6Px+PxeGf5M0ybP78XaSWsH4/H4/F4PJ78uX3Cnmd11fZAWD8ej8fj8Xg8+XPKjevm5zSRvp0Uqv+Tx+PxeDwej3d+/ijf515d5T2cY5I/eTwej8fj8XhT/qzdDKV8U/xUrJc/eTwej8fj8Xjn+bPmofTtHqn+Tx6Px+PxeDze+/kzTwE9Od9k/Xg8Ho/H4/Hkz23/Z74OKd/CKX/yeDwej8fj8e6ef2+ngNbSIFq7I/PyJ4/H4/F4PJ78+fjsw+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/He+/5BqQab71l5rrmAAAAAElFTkSuQmCC",
   "https://nyscgame2.vercel.app/play": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC2ElEQVR42u3du07lMBRA0SP+/58viAJFOQ/bXBRRrBRIAxmvIs2WE9vxevYKHo/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDze33lRXde/djdvjvB1fcSzF4/H4/F4PB7vf3n3pLzn6fdvfu4s/3m7sxxBf/J4PB6Px+Pxuv68/in/pkzN/KeyUfUnj8fj8Xg8nv78RX/e3rbnKNWfPB6Px+PxeLx3+rN8n14OpT95PB6Px+PxeKf9OdfmcLPvP3k8Ho/H4/F4p/1Z3nD0cyY8Px6Px+PxeDz9ud6k6XJnVG/YN8fRnzwej8fj8Xj683T/paimTMs18mWXen48Ho/H4/F4+nO5h2eXoOU4Q6zqTx6Px+PxeDz9WXZmpI85h3vKLUC9f+fxeDwej8fj7fTncmPP8iDO/S9CPT8ej8fj8Xg8/bk//9lF5lCeYf07j8fj8Xg8Hq/pzxg/B41+R/qcrHkeVX/yeDwej8fj8YbgjI3X7kOg5sH1J4/H4/F4PB6vS8ph8Xt3OlK+LZy/yePxeDwej8fb6M9oznCP5s373KLmP3k8Ho/H4/F4y/7MITqfrdlVayY8Px6Px+PxeDz9udx2qZwCjX6P0DyO/uTxeDwej8fjlf2ZX53nEI1+1tT57zwej8fj8Xi80/7cP969nAXt/ov+5PF4PB6Px+PFxoxlOfk5t+swsufH4/F4PB6Ppz+H9Uex+v6zWynfJajnx+PxeDwej6c/5/fv3e5Mwz6f0Sw+0p88Ho/H4/F4+rNbfxTV+vd5tjOPnAnPj8fj8Xg8Hk9/HvXnzjahw5FJnh+Px+PxeDye/tzvz642l5+P6k8ej8fj8Xg8Xtefw/efw7r4vO18mP/k8Xg8Ho/H4636s7whqqOOyhHmxUf6k8fj8Xg8Hk9/vp69eDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4712f9cqNn7TMeW4AAAAASUVORK5CYII=",
   "https://nyscgame1.vercel.app/play": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC3ElEQVR42u3dvW6DMBSA0au+/zunQ6UI+f7YIVHU4TBEbSCcgeWTwSYe392Cx+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/3OS+q7bnreUA++OQMf9tPfHfj8Xg8Ho/H4/0vb+3PNU9Tdl7/Xb4czqA/eTwej8fj8Xhdf153LZ/5yyUyuzPoTx6Px+PxeDzeq/05DISWpao/eTwej8fj8Xj3+nP5snvUU3/yeDwej8fj8W70Z/nN8MfhGfQnj8fj8Xg8Hi/3Z3nAS58z4frxeDwej8fj6c/9Ik3p4KVOD8+jP3k8Ho/H4/H05+H6S8MN90jPfJbJqj95PB6Px+PxeHNwbkc7y/OUR+pPHo/H4/F4PN7cn9GMag4T5Id5SfqTx+PxeDwej1f2ZzluudRmHKza1FWo68fj8Xg8Ho+nP7sFl64H5F/lvV276k8ej8fj8Xg83tCf15jcPs9ZjnxG874k/cnj8Xg8Ho+nP7uxym2CLpna/cT9dx6Px+PxeDzetj+ve/Pf3duRliIN79/k8Xg8Ho/H4439OU+En2cqdS1q/JPH4/F4PB6P1/VnV5vL8fnneVe3BL3rx+PxeDwej6c/55WXuvvpXYt246L6k8fj8Xg8Ho8X40qe0Sy+FOPoqPe/83g8Ho/H4/Fe6s9hLaZhqlE+bUm4fjwej8fj8Xj6c7tFtS5TjGs3hfcf8Xg8Ho/H4/F2/TkfEP0L359HRj/yqT95PB6Px+PxeDHef59XpB/W+Yxm8pH+5PF4PB6Px9Ofw/yj7buNonn483pAeP6Tx+PxeDwej3erP09qc7twvevH4/F4PB6Ppz9P+rNb2DPStKPh/PqTx+PxeDweT3++//xnOSm+K1jXj8fj8Xg8Hk9/bgcwI91S784wTz7Snzwej8fj8Xj68/Hdjcfj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4PB6P9972C5GugavpvP8IAAAAAElFTkSuQmCC"
 };
@@ -426,6 +437,7 @@ TOOLS.forEach(function(t){
   if (t.parts){
     var box = div("tile split"); box.style.setProperty("--c", t.color);
     var hd = div("head");
+    if (!t.logo){ hd.appendChild(div("ttl", t.name)); box.appendChild(hd); } else {
     var NS = "http://www.w3.org/2000/svg";
     var lg = document.createElementNS(NS, "svg");
     lg.setAttribute("class", "logo"); lg.setAttribute("viewBox", t.logo[1]);
@@ -433,7 +445,7 @@ TOOLS.forEach(function(t){
     var us = document.createElementNS(NS, "use"); us.setAttribute("href", "#logo-" + t.logo[0]);
     lg.appendChild(us);
     var vb = t.logo[1].split(" "); lg.style.setProperty("--ar", vb[2] + "/" + vb[3]);
-    hd.appendChild(lg); box.appendChild(hd);
+    hd.appendChild(lg); box.appendChild(hd); }
     t.parts.forEach(function(p){
       var el;
       if (p.qrOf != null){
@@ -454,6 +466,13 @@ TOOLS.forEach(function(t){
     });
     li.appendChild(box);
     grid.appendChild(li);
+    return;
+  }
+  if (t.ready){
+    var r = div("tile ready"); r.setAttribute("aria-disabled", "true");
+    var ro = div("orb", t.icon); ro.setAttribute("aria-hidden", "true");
+    var rm = div("meta"); rm.appendChild(div("name", t.name));
+    r.appendChild(ro); r.appendChild(rm); li.appendChild(r); grid.appendChild(li);
     return;
   }
   var a = document.createElement("a");

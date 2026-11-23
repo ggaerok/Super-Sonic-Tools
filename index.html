@@ -176,7 +176,7 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   background:color-mix(in srgb,var(--c) 10%,transparent);
   overflow:hidden;
 }
-.head .ttl{font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:.01em;color:var(--c);white-space:nowrap;line-height:1}
+.head .ttl{font-family:var(--font-display);font-weight:800;font-size:clamp(11px,3.3vw,13px);letter-spacing:.01em;color:var(--c);white-space:nowrap;line-height:1}
 .head .logo{display:block;height:22px;width:auto;aspect-ratio:var(--ar)}
 .seg{
   min-width:0;
@@ -339,16 +339,21 @@ var TOOLS = [
   { name: "팀 뽑기 게임",       url: "https://nyscdart.vercel.app",               icon: "🎯", color: "var(--c-mint)" },
   { name: "좌석배치표",         url: "https://nyscseatingchart.vercel.app",       icon: "🪑", color: "var(--c-sand)" },
   /* parts가 있으면 한 박스가 여러 칸으로 나뉩니다. qrOf는 QR로 만들 칸의 번호(0부터)입니다. */
-  { name: "GPS Viewer", color: "var(--c-sky)", parts: [
+  { name: "GPS Viewer(vercel)", color: "var(--c-sky)", parts: [
     { name: "운영관리", url: "https://nyscgps.vercel.app/" },
     { name: "GPS실행",  url: "https://nyscgps.vercel.app/location" },
     { name: "QR코드",   qrOf: 1 }
   ] },
-  { name: "준비중", icon: "⏳", ready: true, color: "var(--muted)" }
+  { name: "GPS Viewer(Rander)", color: "var(--c-mint)", parts: [
+    { name: "운영관리", url: "https://nysc-gps.onrender.com/" },
+    { name: "GPS실행",  url: "https://nysc-gps.onrender.com/location" },
+    { name: "QR코드",   qrOf: 1 }
+  ] }
 ];
 
 /* QR 그림: 게임 진행(실행) 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
 var QR_IMAGES = {
+  "https://nysc-gps.onrender.com/location": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC2klEQVR42u3dMW7DMAwFUKL3v3M7dHElkqITI+jwPASFa/sNWj4kkYrvz17B4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8d7zovsWl+43Pz94/rk8Qtf8dmLx+PxeDwej/e/vDV/7mlziZ3HdNrfMX48Ho/H4/F48ueSFZf5zOp3iab7f6935E8ej8fj8Xg83q382YTPZZpU/uTxeDwej8fjPZI/90h5fF7+5PF4PB6Px+O9sP9zf6zJrvZ/8ng8Ho/H4/Hm+TN94Nav+ncej8fj8Xg83jB/lk2aisX36+vDTxk/Ho/H4/F4PPmz2v+ZJszIyt6rGVT5k8fj8Xg8Ho93jIjHaFp1B42s5sj6O4/H4/F4PB7vOP9ZBdG07Wf1gPV3Ho/H4/F4PN68/qjaCNocjbSn0P07xo/H4/F4PB5P/jyWHcXfhp/pinwVQeVPHo/H4/F4PN7d+vcqWE4+a/8nj8fj8Xg8Hm+4zt40Am2+EFmlkvzJ4/F4PB6Px2vSY3XIe79rtDoOXv7k8Xg8Ho/H4zVJsmqsFNvKe3rsZpj/5PF4PB6Px+PdrH9fEma0Zx7tb1XRVP7k8Xg8Ho/Hkz+b/p9Vhqx6zkdbES9/8ng8Ho/H4/GO528ebzZHJtn/yePxeDwej8eb5M++Hf3kyPjY1uLlTx6Px+PxeDxejPt/RtbzM93tmVYtyZ88Ho/H4/F4vOP5m5MHqlOQmnBr/Hg8Ho/H4/Hkz2a7ZtPVM0518WkXJuPH4/F4PB6PJ3/2/ZT6ivgoOoWqf+fxeDwej8fjvZk/01qktGV9c1iS8ePxeDwej8eTP+f5s6ot2iuSqi2gxo/H4/F4PB5P/jzu/5yssEdxNJL8yePxeDwej8e7W/9ezXamsXPfGip/8ng8Ho/H4/HiTv/PBy8ej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/H4/F4PN571w9UDG+98uVM4QAAAABJRU5ErkJggg==",
   "https://nyscgps.vercel.app/location": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA3gAAAN4AQMAAACroNgNAAAABlBMVEULECH///+3cDDHAAAC1klEQVR42u3dMW4DMQwEQCL//7NTJThY5EpnB0aKucIIAvumULMQKaoen32Kx+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/3d151z/MPfv75+3n92vYNX/XZh8fj8Xg8Ho/3v7zn/Lmmzesf62/P3yB/8ng8Ho/H4/Ha9LjGyzZzrtE0vEH+5PF4PB6Px+Pdyp/Xyntbhc9vkD95PB6Px+PxeHfzZyjNh6ZQ+ZPH4/F4PB6Pd7f/s/1JzfV3/Z88Ho/H4/F4vMP82X7h1qfz7zwej8fj8Xi8w/w5Dmnq+j+f9jYPX2X9eDwej8fj8eTPw2r7Scl+G26tH4/H4/F4PJ782Y6X3x44ao8gra9Vf+fxeDwej8fjbevv14SZbziaRjCpv/N4PB6Px+Px7l6vud3eDH2hNRyHt348Ho/H4/F48mfbAtrO9qyu8p53UOVPHo/H4/F4PF7F+UvTGM+Kt8OvGVX/J4/H4/F4PB7vcP5nuNUohNXwZfmTx+PxeDwej1e7+nsNg+XzXfC5Om/9eDwej8fj8eTPaQu0PY60Ldnb/+TxeDwej8fjvVB/D9e4VzedKVTt5U8ej8fj8Xg83vYyo9r1dlZ3Uj4fYpI/eTwej8fj8eTP6Tz71MZZXQvotNtZ+j95PB6Px+PxeGf5M0ybP78XaSWsH4/H4/F4PJ78uX3Cnmd11fZAWD8ej8fj8Xg8+XPKjevm5zSRvp0Uqv+Tx+PxeDwej3d+/ijf515d5T2cY5I/eTwej8fj8XhT/qzdDKV8U/xUrJc/eTwej8fj8Xjn+bPmofTtHqn+Tx6Px+PxeDze+/kzTwE9Od9k/Xg8Ho/H4/Hkz23/Z74OKd/CKX/yeDwej8fj8e6ef2+ngNbSIFq7I/PyJ4/H4/F4PJ78+fjsw+PxeDwej8fj8Xg8Ho/H4/F4PB6Px+PxeDwej8fj8Xg8Ho/He+/5BqQab71l5rrmAAAAAElFTkSuQmCC",
 };
 

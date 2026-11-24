@@ -558,8 +558,70 @@ function renderUpdates(){
   umFlt.textContent = "";
   if (umFilter){ umFlt.appendChild(upEl("b", null, umFilter)); umFlt.appendChild(document.createTextNode(" 내역만 보는 중 · " + rows.length + "건")); }
 }
+/* 구글 시트 연결: 시트에 적은 소식이 여기로 읽혀 옵니다. 읽기에 실패하면 위의 UPDATES(기본 내용)를 보여줍니다. */
+var SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTNDWQDCrZAUAbtauMzNMXBqmeHBv5T0y7lLfcC9MhPZL1oP5P7eZFdlw0_wd4aKGg-i5pEQ-U0IE8g/pub?output=csv";
+var UP_TYPE_KEY = { "추가": "add", "변경": "chg", "개선": "imp", "테스트": "test" };
+var UP_PALETTE = ["var(--c-ember)", "var(--c-lagoon)", "var(--c-lilac)", "var(--c-sun)", "var(--c-rose)", "var(--c-sky)", "var(--c-mint)", "var(--c-sand)", "var(--c-pink)", "var(--c-lime)"];
+var upExtra = 0, upLoadedAt = 0;
+function parseCsv(text){
+  var rows = [], row = [], cell = "", q = false, i, c;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  for (i = 0; i < text.length; i++){
+    c = text[i];
+    if (q){
+      if (c === '"'){ if (text[i + 1] === '"'){ cell += '"'; i++; } else q = false; }
+      else cell += c;
+    } else if (c === '"') q = true;
+    else if (c === ","){ row.push(cell); cell = ""; }
+    else if (c === "\n" || c === "\r"){
+      if (c === "\r" && text[i + 1] === "\n") i++;
+      row.push(cell); cell = ""; rows.push(row); row = [];
+    } else cell += c;
+  }
+  if (cell !== "" || row.length){ row.push(cell); rows.push(row); }
+  return rows;
+}
+function normDate(s){
+  var m = String(s || "").match(/(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+  return m ? m[1] + "-" + ("0" + m[2]).slice(-2) + "-" + ("0" + m[3]).slice(-2) : "";
+}
+function splitList(s){ return String(s || "").split(/[,，、]/).map(function(x){ return x.trim(); }).filter(Boolean); }
+function sheetToUpdates(text){
+  var rows = parseCsv(text), head = rows.shift() || [], col = {};
+  head.forEach(function(n, k){ col[String(n).trim()] = k; });
+  if (col["날짜"] == null || col["내용"] == null) return null;
+  var out = [];
+  rows.forEach(function(r){
+    var d = normDate(r[col["날짜"]]), text = (r[col["내용"]] || "").trim();
+    if (!d || !text) return;
+    var tools = splitList(col["도구"] != null ? r[col["도구"]] : "");
+    var types = splitList(col["종류"] != null ? r[col["종류"]] : "").map(function(t){ return UP_TYPE_KEY[t]; }).filter(Boolean);
+    var u = { d: d, tools: tools.length ? tools : ["기타"], type: types, text: text };
+    if (col["비고"] != null && (r[col["비고"]] || "").trim()) u.note = r[col["비고"]].trim();
+    if (col["담당"] != null && (r[col["담당"]] || "").trim()) u.who = r[col["담당"]].trim();
+    u.tools.forEach(function(t){ if (!UP_COLOR[t]) UP_COLOR[t] = UP_PALETTE[upExtra++ % UP_PALETTE.length]; });
+    out.push(u);
+  });
+  out = out.map(function(u, k){ return { u: u, k: k }; })
+    .sort(function(a, b){ return a.u.d < b.u.d ? 1 : a.u.d > b.u.d ? -1 : a.k - b.k; })
+    .map(function(x){ return x.u; });
+  return out.length ? out : null;
+}
+function loadSheet(){
+  if (!SHEET_URL || Date.now() - upLoadedAt < 30000) return;
+  upLoadedAt = Date.now();
+  fetch(SHEET_URL, { cache: "no-store" }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.text(); })
+    .then(function(t){
+      var list = sheetToUpdates(t);
+      if (!list) return;
+      UPDATES = list;
+      if (umFilter && !UPDATES.some(function(u){ return u.tools.indexOf(umFilter) !== -1; })) umFilter = null;
+      renderUpdates();
+    })
+    .catch(function(){ upLoadedAt = 0; });
+}
 function openUpdates(){
-  umFilter = null; renderUpdates(); umList.scrollTop = 0;
+  umFilter = null; renderUpdates(); umList.scrollTop = 0; loadSheet();
   um.hidden = false; document.body.style.overflow = "hidden"; umX.focus();
 }
 function closeUpdates(){
@@ -571,6 +633,7 @@ umX.addEventListener("click", closeUpdates);
 umAll.addEventListener("click", function(){ umFilter = null; renderUpdates(); umList.scrollTop = 0; });
 um.addEventListener("click", function(ev){ if (ev.target === um) closeUpdates(); });
 document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !um.hidden) closeUpdates(); });
+loadSheet();
 
 TOOLS.forEach(function(t){
   var li = document.createElement("li");

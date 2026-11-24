@@ -270,6 +270,60 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .tile.has-note .orb{width:32px;height:32px;font-size:17px}
 .tile.has-note .name{font-size:12.5px;line-height:1.2}
 .note{white-space:nowrap;margin-top:2px;font-size:10.5px;font-weight:700;line-height:1.2;letter-spacing:-.02em;color:var(--c-rose)}
+/* 업데이트 현황 */
+.upd-btn{
+  position:absolute;right:0;top:128px;z-index:2;
+  display:inline-flex;align-items:center;gap:6px;
+  height:34px;padding:0 13px 0 11px;
+  font:700 12.5px/1 var(--font-body);letter-spacing:-.02em;white-space:nowrap;
+  color:var(--fg);cursor:pointer;
+  border-radius:999px;border:1px solid var(--line);
+  background:linear-gradient(165deg,var(--surface),var(--surface-2));
+  box-shadow:0 0 18px color-mix(in srgb,var(--accent) 16%,transparent);
+  transition:border-color .16s ease,transform .16s ease;
+}
+.upd-btn:hover,.upd-btn:active{border-color:var(--accent);transform:translateY(-1px)}
+.upd-btn .dot{width:7px;height:7px;border-radius:50%;background:var(--c-lagoon);box-shadow:0 0 8px var(--c-lagoon)}
+.um .sheet{
+  width:min(420px,100%);max-height:min(86vh,780px);max-height:min(86dvh,780px);
+  display:flex;flex-direction:column;overflow:hidden;
+  border-radius:20px;background:linear-gradient(170deg,var(--surface),var(--surface-2));border:1px solid var(--line);
+}
+.um .bar{display:flex;align-items:center;gap:8px;padding:13px 14px 12px 16px;border-bottom:1px solid var(--line);flex:none}
+.um .bar h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.um .all{
+  font:700 12px/1 var(--font-body);height:28px;padding:0 12px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--line);background:transparent;color:var(--muted);
+}
+.um .all[aria-pressed="true"]{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.um .all:hover{border-color:var(--accent)}
+.um .x{margin-left:auto;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--muted);font-size:15px;line-height:1;cursor:pointer}
+.um .x:hover{border-color:var(--accent);color:var(--fg)}
+.um .flt{flex:none;padding:8px 16px;font-size:13px;color:var(--muted);border-bottom:1px solid var(--line);background:color-mix(in srgb,var(--accent) 6%,transparent)}
+.um .flt b{color:var(--fg)}
+.um .list{overflow:auto;padding:4px 12px 20px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.um .row{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;padding:12px 4px;border-bottom:1px solid var(--line)}
+.um .row:nth-child(odd){background:rgba(255,255,255,.02)}
+.um .d{text-align:center;line-height:1.1}
+.um .d b{display:block;font:700 20px var(--font-mono);color:var(--fg)}
+.um .d span{font-size:11px;color:var(--muted)}
+.um .h{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:3px}
+.um .tn{
+  font:800 14.5px/1.3 var(--font-body);letter-spacing:-.02em;color:var(--c);
+  background:none;border:0;padding:0;cursor:pointer;
+  text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--c) 40%,transparent);text-underline-offset:3px;
+}
+.um .tn[aria-current="true"]{text-decoration-thickness:2px;text-decoration-color:var(--c)}
+.um .tn + .tn:before{content:"·";color:var(--muted);margin-right:6px;text-decoration:none;display:inline-block}
+.um .who{font-size:12.5px;color:var(--muted)}
+.um .bd{font-size:11px;font-weight:800;padding:2px 7px;border-radius:6px;white-space:nowrap}
+.um .bd.add{background:rgba(142,226,156,.14);color:var(--c-mint)}
+.um .bd.chg{background:rgba(124,196,255,.14);color:var(--c-sky)}
+.um .bd.imp{background:rgba(196,166,255,.14);color:var(--c-lilac)}
+.um .bd.test{background:rgba(255,122,142,.14);color:var(--c-rose)}
+.um .tx{font-size:15px;line-height:1.5;color:var(--fg)}
+.um .nt{margin-top:2px;font-size:12.5px;color:var(--muted)}
+.um .none{padding:28px 8px;text-align:center;color:var(--muted)}
 footer{
   margin-top:36px;
   text-align:center;
@@ -313,6 +367,7 @@ body{margin:0}
       <ellipse cx="60" cy="45" rx="56" ry="13" fill="none" stroke="var(--ring)" stroke-width="2.4" transform="rotate(-18 60 45)" clip-path="url(#front)"/>
     </svg>
     <p class="eyebrow" id="count">LINKS</p>
+    <button type="button" class="upd-btn" id="updBtn" aria-haspopup="dialog"><span class="dot" aria-hidden="true"></span>업데이트 현황</button>
     <h1>수퍼소닉<br>도구 모음</h1>
     <p class="lede">탭하면 새 탭에서 열립니다.</p>
   </header>
@@ -322,6 +377,18 @@ body{margin:0}
   <ul class="grid" id="grid"></ul>
 
   <footer>수퍼소닉 도구 모음</footer>
+</div>
+
+<div class="modal um" id="um" hidden role="dialog" aria-modal="true" aria-labelledby="umt">
+  <div class="sheet">
+    <div class="bar">
+      <h2 id="umt">업데이트 현황</h2>
+      <button type="button" class="all" id="umAll" aria-pressed="true">전체보기</button>
+      <button type="button" class="x" id="umX" aria-label="닫기">✕</button>
+    </div>
+    <div class="flt" id="umFlt" hidden></div>
+    <div class="list" id="umList"></div>
+  </div>
 </div>
 
 <div class="modal" id="qrm" hidden role="dialog" aria-modal="true" aria-labelledby="qrt">
@@ -443,6 +510,67 @@ function closeQr(){
 qrc.addEventListener("click", closeQr);
 qrm.addEventListener("click", function(ev){ if (ev.target === qrm) closeQr(); });
 document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !qrm.hidden) closeQr(); });
+
+/* 업데이트 현황: 새 소식은 이 배열 맨 위에 한 줄씩 추가하세요. type: add 추가 / chg 변경 / imp 개선 / test 테스트 */
+var UPDATES = [
+  { d: "2026-11-25", tools: ["라이트페인팅"], type: ["add", "test"], text: "사용량 체크를 위한 대시보드 추가", note: "시범운영 11.24" },
+  { d: "2026-11-24", tools: ["팀 뽑기 게임"], who: "유지현", type: ["add"], text: "마지막 종료 후 전체 순위 표시" },
+  { d: "2026-11-23", tools: ["Cosmos Ball", "Solar System"], type: ["imp", "test"], text: "CDN 감소를 위한 코드 재작성 완료", note: "테스트 예정" },
+  { d: "2026-11-23", tools: ["GPS Viewer"], type: ["imp"], text: "CDN 감소를 위한 코드 재작성 완료" },
+  { d: "2026-11-23", tools: ["종이비행기 타겟"], who: "장현동", type: ["chg"], text: "점수 위치 변경" },
+  { d: "2026-11-23", tools: ["GPS Viewer"], type: ["chg"], text: "운영서버 이원화 (Vercel, Render)", note: "Render는 운영자만 첫 접속 시 로딩 1분, 이후 정상 작동" },
+  { d: "2026-11-20", tools: ["라이트페인팅"], type: ["add", "test"], text: "사진공유 및 채팅 도구 추가", note: "테스트 중" },
+  { d: "2026-11-20", tools: ["좌석배치표"], type: ["add"], text: "전체공지 Wifi 안내 추가" },
+  { d: "2026-11-18", tools: ["Cosmos Ball", "Solar System"], type: ["add"], text: "vercel 사용량 체크용 게임 도구 추가" }
+];
+var UP_COLOR = { "Cosmos Ball": "var(--c-pink)", "Solar System": "var(--c-lime)", "좌석배치표": "var(--c-sand)", "라이트페인팅": "var(--c-mint)", "GPS Viewer": "var(--c-sky)", "종이비행기 타겟": "var(--c-ember)", "팀 뽑기 게임": "var(--c-lilac)" };
+var UP_TYPE = { add: "추가", chg: "변경", imp: "개선", test: "테스트" };
+var UP_WD = ["일", "월", "화", "수", "목", "금", "토"];
+var um = document.getElementById("um"), umList = document.getElementById("umList"),
+    umFlt = document.getElementById("umFlt"), umAll = document.getElementById("umAll"),
+    umX = document.getElementById("umX"), updBtn = document.getElementById("updBtn"), umFilter = null;
+function upEl(tag, cls, text){ var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+function renderUpdates(){
+  umList.textContent = "";
+  var rows = UPDATES.filter(function(u){ return !umFilter || u.tools.indexOf(umFilter) !== -1; });
+  rows.forEach(function(u){
+    var p = u.d.split("-"), wd = UP_WD[new Date(u.d + "T00:00:00").getDay()];
+    var row = upEl("div", "row"), d = upEl("div", "d");
+    d.appendChild(upEl("b", null, p[2])); d.appendChild(upEl("span", null, (+p[1]) + "월 " + wd));
+    var main = upEl("div", "main"), h = upEl("div", "h");
+    u.tools.forEach(function(t){
+      var b = upEl("button", "tn", t); b.type = "button";
+      b.style.setProperty("--c", UP_COLOR[t] || "var(--accent)");
+      if (umFilter === t) b.setAttribute("aria-current", "true");
+      b.setAttribute("aria-label", t + " 내역만 보기");
+      b.addEventListener("click", function(){ umFilter = t; renderUpdates(); umList.scrollTop = 0; });
+      h.appendChild(b);
+    });
+    if (u.who) h.appendChild(upEl("span", "who", u.who));
+    u.type.forEach(function(k){ h.appendChild(upEl("span", "bd " + k, UP_TYPE[k])); });
+    main.appendChild(h); main.appendChild(upEl("div", "tx", u.text));
+    if (u.note) main.appendChild(upEl("div", "nt", u.note));
+    row.appendChild(d); row.appendChild(main); umList.appendChild(row);
+  });
+  if (!rows.length) umList.appendChild(upEl("div", "none", "등록된 내역이 없습니다."));
+  umAll.setAttribute("aria-pressed", umFilter ? "false" : "true");
+  umFlt.hidden = !umFilter;
+  umFlt.textContent = "";
+  if (umFilter){ umFlt.appendChild(upEl("b", null, umFilter)); umFlt.appendChild(document.createTextNode(" 내역만 보는 중 · " + rows.length + "건")); }
+}
+function openUpdates(){
+  umFilter = null; renderUpdates(); umList.scrollTop = 0;
+  um.hidden = false; document.body.style.overflow = "hidden"; umX.focus();
+}
+function closeUpdates(){
+  um.hidden = true; document.body.style.overflow = "";
+  try { updBtn.focus(); } catch (e) {}
+}
+updBtn.addEventListener("click", openUpdates);
+umX.addEventListener("click", closeUpdates);
+umAll.addEventListener("click", function(){ umFilter = null; renderUpdates(); umList.scrollTop = 0; });
+um.addEventListener("click", function(ev){ if (ev.target === um) closeUpdates(); });
+document.addEventListener("keydown", function(ev){ if (ev.key === "Escape" && !um.hidden) closeUpdates(); });
 
 TOOLS.forEach(function(t){
   var li = document.createElement("li");

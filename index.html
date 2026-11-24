@@ -546,10 +546,10 @@ function renderUpdates(){
       b.addEventListener("click", function(){ umFilter = t; renderUpdates(); umList.scrollTop = 0; });
       h.appendChild(b);
     });
-    if (u.who) h.appendChild(upEl("span", "who", u.who));
     u.type.forEach(function(k){ h.appendChild(upEl("span", "bd " + k, UP_TYPE[k])); });
     main.appendChild(h); main.appendChild(upEl("div", "tx", u.text));
-    if (u.note) main.appendChild(upEl("div", "nt", u.note));
+    var nt = [u.note, u.who].filter(Boolean).join(" / ");
+    if (nt) main.appendChild(upEl("div", "nt", nt));
     row.appendChild(d); row.appendChild(main); umList.appendChild(row);
   });
   if (!rows.length) umList.appendChild(upEl("div", "none", "등록된 내역이 없습니다."));

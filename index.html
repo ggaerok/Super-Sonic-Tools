@@ -598,7 +598,8 @@ function sheetToUpdates(text){
     var types = splitList(col["종류"] != null ? r[col["종류"]] : "").map(function(t){ return UP_TYPE_KEY[t]; }).filter(Boolean);
     var u = { d: d, tools: tools.length ? tools : ["기타"], type: types, text: text };
     if (col["비고"] != null && (r[col["비고"]] || "").trim()) u.note = r[col["비고"]].trim();
-    if (col["담당"] != null && (r[col["담당"]] || "").trim()) u.who = r[col["담당"]].trim();
+    var wc = col["제안자"] != null ? col["제안자"] : col["담당"];
+    if (wc != null && (r[wc] || "").trim()) u.who = r[wc].trim();
     u.tools.forEach(function(t){ if (!UP_COLOR[t]) UP_COLOR[t] = UP_PALETTE[upExtra++ % UP_PALETTE.length]; });
     out.push(u);
   });

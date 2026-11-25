@@ -265,6 +265,7 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
   word-break:keep-all;
 }
 
+@media (max-width:359px){.tile.long .orb{display:none}.tile.long .name{font-size:12.5px;line-height:1.2}}
 .tile.has-note{gap:7px;padding-top:6px;padding-bottom:6px}
 @media (max-width:419px){.tile.has-note .orb{display:none}}
 .tile.has-note .orb{width:32px;height:32px;font-size:17px}
@@ -411,7 +412,7 @@ var TOOLS = [
   { name: "회.물.공. 기록표",        url: "https://nysc-revolution.vercel.app",        icon: "🏆", color: "var(--c-rose)" },
   { name: "팀 뽑기 게임",       url: "https://nyscdart.vercel.app",               icon: "🎯", color: "var(--c-mint)" },
   { name: "좌석배치표",         url: "https://nyscseatingchart.vercel.app",       icon: "🪑", color: "var(--c-sand)" },
-  { name: "라이트 페인팅 사진 공유", url: "https://nysc-astrophotography.vercel.app/admin", icon: "📸", color: "var(--c-lagoon)", note: "테스트 중, 사용금지" },
+  { name: "라이트 페인팅 사진 공유", url: "https://nysc-astrophotography.vercel.app/admin", icon: "📸", color: "var(--c-lagoon)" },
   { spacer: true },
   /* parts가 있으면 한 박스가 여러 칸으로 나뉩니다. qrOf는 QR로 만들 칸의 번호(0부터)입니다. */
   { name: "GPS Viewer(Vercel)", color: "var(--c-sky)", parts: [
@@ -681,7 +682,7 @@ TOOLS.forEach(function(t){
     return;
   }
   var a = document.createElement("a");
-  a.className = "tile" + (t.note ? " has-note" : "");
+  a.className = "tile" + (t.note ? " has-note" : "") + (t.name.length >= 12 ? " long" : "");
   a.href = t.url; a.target = "_blank"; a.rel = "noopener noreferrer";
   a.setAttribute("aria-label", t.name + " 열기");
   var orb = div("orb", t.icon); orb.style.setProperty("--c", t.color);

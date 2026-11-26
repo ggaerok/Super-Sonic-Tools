@@ -357,6 +357,16 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .lastbar,.sinfo{margin:0 8px 8px;align-self:stretch;border:1px solid color-mix(in srgb,var(--c,var(--accent)) 38%,var(--line));border-radius:9px;background:#070B18;color:#B9C3E6;padding:0 9px}
 .sinfo{grid-column:1 / -1}
 .lastbar.empty,.sinfo.empty{border-style:dashed;color:var(--muted)}
+.lastbar span.up,.sinfo span.up{font:700 8.5px var(--font-mono);letter-spacing:.14em;color:var(--c,var(--accent));padding:3px 6px;border-radius:4px;background:color-mix(in srgb,var(--c,var(--accent)) 20%,transparent);flex:none;text-overflow:clip}
+.lastbar.empty span,.sinfo.empty span{font:inherit;letter-spacing:0;padding:0;background:none;color:var(--muted)}
+.tile.two{grid-template-rows:minmax(0,1fr) 30px;min-height:80px}
+.tile.split.has-last{grid-template-rows:30px minmax(0,1fr) 30px;min-height:100px}
+.lastbar,.sinfo{margin:0 8px 8px;justify-content:space-between}
+.lastbar i,.sinfo i{margin-right:0;font-size:10px}
+.lastbar span.up:after,.sinfo span.up:after{content:" ›";letter-spacing:0}
+.lastbar:not(.empty),.sinfo:not(.empty){cursor:pointer;transition:border-color .16s ease}
+.lastbar:not(.empty):hover,.sinfo:not(.empty):hover{border-color:var(--c,var(--accent))}
+.lastbar:focus-visible,.sinfo:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 footer{
   margin-top:36px;
   text-align:center;
@@ -565,18 +575,30 @@ function latestFor(tool){
   }
   return null;
 }
+function bindInfo(x){
+  x.el.setAttribute("role", "button"); x.el.tabIndex = 0;
+  x.el.setAttribute("aria-label", x.name + " 업데이트 내역 보기");
+  if (x.bound) return; x.bound = true;
+  var go = function(ev){ if (!x.tool) return; ev.preventDefault(); ev.stopPropagation(); openUpdates(x.tool); };
+  x.el.addEventListener("click", go);
+  x.el.addEventListener("keydown", function(ev){ if (ev.key === "Enter" || ev.key === " ") go(ev); });
+}
 function refreshTileInfo(){
   tileInfo.forEach(function(x){
     var u = latestFor(x.name) || latestFor(TILE_ALIAS[x.name]);
+    x.tool = null;
     x.el.textContent = "";
-    if (!u){ var em = document.createElement("span"); em.textContent = "등록된 소식 없음"; x.el.appendChild(em); x.el.classList.add("empty"); x.el.style.display = ""; return; }
+    if (!u){ var em = document.createElement("span"); em.textContent = "등록된 소식 없음"; x.el.appendChild(em); x.el.classList.add("empty"); x.el.style.display = ""; x.el.removeAttribute("role"); x.el.removeAttribute("tabindex"); x.el.removeAttribute("aria-label"); return; }
     x.el.classList.remove("empty");
+    var kk = toolKey(x.name), ka = toolKey(TILE_ALIAS[x.name]);
+    x.tool = (u.tools.filter(function(t){ return toolKey(t) === kk; })[0]) || (u.tools.filter(function(t){ return toolKey(t) === ka; })[0]) || null;
     var dt = u.d.slice(5).replace("-", ".");
     var i = document.createElement("i"); i.textContent = dt;
     x.el.appendChild(i);
-    var s = document.createElement("span"); s.textContent = u.text; x.el.appendChild(s);
+    var s = document.createElement("span"); s.textContent = "UPDATE"; s.className = "up"; x.el.appendChild(s);
     x.el.title = dt + " " + u.text;
     x.el.style.display = "";
+    bindInfo(x);
   });
 }
 var UP_TYPE = { add: "추가", chg: "변경", imp: "개선", test: "테스트" };
@@ -677,15 +699,15 @@ function loadSheet(){
     })
     .catch(function(){ upLoadedAt = 0; });
 }
-function openUpdates(){
-  umFilter = null; renderUpdates(); umList.scrollTop = 0; loadSheet();
+function openUpdates(tool){
+  umFilter = tool || null; renderUpdates(); umList.scrollTop = 0; loadSheet();
   um.hidden = false; document.body.style.overflow = "hidden"; umX.focus();
 }
 function closeUpdates(){
   um.hidden = true; document.body.style.overflow = "";
   try { updBtn.focus(); } catch (e) {}
 }
-updBtn.addEventListener("click", openUpdates);
+updBtn.addEventListener("click", function(){ openUpdates(); });
 umX.addEventListener("click", closeUpdates);
 umAll.addEventListener("click", function(){ umFilter = null; renderUpdates(); umList.scrollTop = 0; });
 um.addEventListener("click", function(ev){ if (ev.target === um) closeUpdates(); });

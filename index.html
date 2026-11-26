@@ -325,6 +325,24 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .um .tx{font-size:15px;line-height:1.5;color:var(--fg)}
 .um .nt{margin-top:2px;font-size:12.5px;color:var(--muted)}
 .um .none{padding:28px 8px;text-align:center;color:var(--muted)}
+/* 도구별 최신 소식 한 줄 (구글 시트에서 읽어옴) */
+.tile.two{padding:0;gap:0;display:grid;grid-template-rows:minmax(0,1fr) 21px;min-height:64px;height:100%;overflow:hidden}
+.tile.two .tmain{display:flex;align-items:center;gap:10px;padding:0 12px;min-height:0}
+.tile.two .orb{width:30px;height:30px;font-size:17px;flex:none}
+.tile.two .name{font-size:13.5px;line-height:1.2}
+.lastbar,.sinfo{display:flex;align-items:center;padding:0 10px;font-size:10px;line-height:1;color:var(--muted);white-space:nowrap;overflow:hidden;border-top:1px solid var(--line);background:color-mix(in srgb,var(--c,var(--accent)) 9%,transparent)}
+.lastbar{padding:0 12px}
+.lastbar.empty,.sinfo.empty{opacity:.5}
+.lastbar i,.sinfo i{font:normal 700 9.5px var(--font-mono);color:var(--accent);margin-right:5px;flex:none}
+.lastbar span,.sinfo span{overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sinfo{grid-column:1 / -1}
+.tile.split.has-last{grid-template-rows:30px minmax(0,1fr) 21px;min-height:84px}
+/* 소식 두 줄 표시 */
+.tile.two{grid-template-rows:minmax(0,1fr) 32px;min-height:74px}
+.lastbar,.sinfo{align-items:center;line-height:1.3}
+.lastbar i,.sinfo i{align-self:center}
+.lastbar span,.sinfo span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
+.tile.split.has-last{grid-template-rows:30px minmax(0,1fr) 32px;min-height:95px}
 footer{
   margin-top:36px;
   text-align:center;
@@ -404,17 +422,12 @@ body{margin:0}
 <script>
 /* 박스 버튼 데이터: 새 링크는 이 배열 끝에 한 줄씩 추가하면 아래로 계속 늘어납니다. */
 var TOOLS = [
-  { name: "코스믹코드 해독", url: "https://nysc-space-message-sol.vercel.app", icon: "💬", color: "var(--c-ember)" },
-  { name: "코스믹코드 제작",     url: "https://nysc-space-message.vercel.app",     icon: "✉️", color: "var(--c-lagoon)" },
-  { name: "플라네타리움",      url: "https://nysc-planetarium.vercel.app",       icon: "🌍", color: "var(--c-lilac)" },
-  { name: "45도 거리 계산",     url: "https://20260716.vercel.app",               icon: "🚀", color: "var(--c-sun)" },
   { name: "비행기 타겟",       url: "https://nysc-airplane-target.vercel.app",   icon: "✈️", color: "var(--c-sky)" },
   { name: "회.물.공. 기록표",        url: "https://nysc-revolution.vercel.app",        icon: "🏆", color: "var(--c-rose)" },
   { name: "팀 뽑기 게임",       url: "https://nyscdart.vercel.app",               icon: "🎯", color: "var(--c-mint)" },
   { name: "좌석배치표",         url: "https://nyscseatingchart.vercel.app",       icon: "🪑", color: "var(--c-sand)" },
   { name: "라이트 페인팅 사진 공유", url: "https://nysc-astrophotography.vercel.app/admin", icon: "📸", color: "var(--c-lagoon)" },
-  { spacer: true },
-  /* parts가 있으면 한 박스가 여러 칸으로 나뉩니다. qrOf는 QR로 만들 칸의 번호(0부터)입니다. */
+  { name: "플라네타리움",      url: "https://nysc-planetarium.vercel.app",       icon: "🌍", color: "var(--c-lilac)" },
   { name: "GPS Viewer(Vercel)", color: "var(--c-sky)", parts: [
     { name: "운영관리", url: "https://nyscgps.vercel.app/" },
     { name: "GPS실행",  url: "https://nyscgps.vercel.app/location" },
@@ -434,7 +447,10 @@ var TOOLS = [
     { name: "게임관리", url: "https://nyscgame2.vercel.app/" },
     { name: "게임진행", url: "https://nyscgame2.vercel.app/play" },
     { name: "QR코드",   qrOf: 1 }
-  ] }
+  ] },
+  { name: "코스믹코드 해독", url: "https://nysc-space-message-sol.vercel.app", icon: "💬", color: "var(--c-ember)" },
+  { name: "코스믹코드 제작",     url: "https://nysc-space-message.vercel.app",     icon: "✉️", color: "var(--c-lagoon)" },
+  { name: "45도 거리 계산",     url: "https://20260716.vercel.app",               icon: "🚀", color: "var(--c-sun)" }
 ];
 
 /* QR 그림: 게임 진행(실행) 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
@@ -525,6 +541,30 @@ var UPDATES = [
   { d: "2026-11-18", tools: ["Cosmos Ball", "Solar System"], type: ["add"], text: "vercel 사용량 체크용 게임 도구 추가" }
 ];
 var UP_COLOR = { "Cosmos Ball": "var(--c-pink)", "Solar System": "var(--c-lime)", "좌석배치표": "var(--c-sand)", "라이트페인팅": "var(--c-mint)", "GPS Viewer": "var(--c-sky)", "종이비행기 타겟": "var(--c-ember)", "팀 뽑기 게임": "var(--c-lilac)" };
+var tileInfo = [];
+var TILE_ALIAS = { "라이트 페인팅 사진 공유": "라이트페인팅", "비행기 타겟": "종이비행기 타겟", "GPS Viewer(Vercel)": "GPS Viewer", "GPS Viewer(Render)": "GPS Viewer" };
+function toolKey(s){ return String(s || "").replace(/\s+/g, "").toLowerCase(); }
+function latestFor(tool){
+  var k = toolKey(tool);
+  for (var i = 0; i < UPDATES.length; i++){
+    if (UPDATES[i].tools.some(function(t){ return toolKey(t) === k; })) return UPDATES[i];
+  }
+  return null;
+}
+function refreshTileInfo(){
+  tileInfo.forEach(function(x){
+    var u = latestFor(x.name) || latestFor(TILE_ALIAS[x.name]);
+    x.el.textContent = "";
+    if (!u){ var e = document.createElement("span"); e.textContent = "등록된 소식 없음"; x.el.appendChild(e); x.el.classList.add("empty"); return; }
+    x.el.classList.remove("empty");
+    var dt = u.d.slice(5).replace("-", ".");
+    var i = document.createElement("i"); i.textContent = dt;
+    x.el.appendChild(i);
+    var s = document.createElement("span"); s.textContent = u.text; x.el.appendChild(s);
+    x.el.title = dt + " " + u.text;
+    x.el.style.display = "";
+  });
+}
 var UP_TYPE = { add: "추가", chg: "변경", imp: "개선", test: "테스트" };
 var UP_WD = ["일", "월", "화", "수", "목", "금", "토"];
 var um = document.getElementById("um"), umList = document.getElementById("umList"),
@@ -617,6 +657,7 @@ function loadSheet(){
       var list = sheetToUpdates(t);
       if (!list) return;
       UPDATES = list;
+      refreshTileInfo();
       if (umFilter && !UPDATES.some(function(u){ return u.tools.indexOf(umFilter) !== -1; })) umFilter = null;
       renderUpdates();
     })
@@ -669,6 +710,7 @@ TOOLS.forEach(function(t){
       el.appendChild(s);
       box.appendChild(el);
     });
+    var si = div("sinfo"); box.appendChild(si); box.classList.add("has-last"); tileInfo.push({ name: t.name, el: si });
     li.appendChild(box);
     grid.appendChild(li);
     return;
@@ -690,11 +732,13 @@ TOOLS.forEach(function(t){
   var meta = div("meta");
   meta.appendChild(div("name", t.name));
   if (t.note) meta.appendChild(div("note", t.note));
-  a.appendChild(orb);
-  a.appendChild(meta);
+  a.className += " two"; a.style.setProperty("--c", t.color);
+  var top = div("tmain"); top.appendChild(orb); top.appendChild(meta); a.appendChild(top);
+  var lt = div("lastbar"); a.appendChild(lt); tileInfo.push({ name: t.name, el: lt });
   li.appendChild(a);
   grid.appendChild(li);
 });
+refreshTileInfo();
 document.getElementById("count").textContent = "LINKS · " + String(TOOLS.filter(function(t){ return !t.spacer; }).length).padStart(2, "0");
 
 /* 별 배경 */

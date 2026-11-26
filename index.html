@@ -338,6 +338,7 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .sinfo{grid-column:1 / -1}
 .tile.split.has-last{grid-template-rows:30px minmax(0,1fr) 21px;min-height:84px}
 /* 소식 두 줄 표시 */
+.tile.two.nolast{grid-template-rows:minmax(0,1fr)}
 .tile.two{grid-template-rows:minmax(0,1fr) 32px;min-height:74px}
 .lastbar,.sinfo{align-items:center;line-height:1.3}
 .lastbar i,.sinfo i{align-self:center}
@@ -555,8 +556,8 @@ function refreshTileInfo(){
   tileInfo.forEach(function(x){
     var u = latestFor(x.name) || latestFor(TILE_ALIAS[x.name]);
     x.el.textContent = "";
-    if (!u){ var e = document.createElement("span"); e.textContent = "등록된 소식 없음"; x.el.appendChild(e); x.el.classList.add("empty"); return; }
-    x.el.classList.remove("empty");
+    if (!u){ x.el.style.display = "none"; x.box.classList.add("nolast"); x.box.classList.remove("has-last"); return; }
+    x.box.classList.remove("nolast"); if (x.box.classList.contains("split")) x.box.classList.add("has-last");
     var dt = u.d.slice(5).replace("-", ".");
     var i = document.createElement("i"); i.textContent = dt;
     x.el.appendChild(i);
@@ -710,7 +711,7 @@ TOOLS.forEach(function(t){
       el.appendChild(s);
       box.appendChild(el);
     });
-    var si = div("sinfo"); box.appendChild(si); box.classList.add("has-last"); tileInfo.push({ name: t.name, el: si });
+    var si = div("sinfo"); box.appendChild(si); box.classList.add("has-last"); tileInfo.push({ name: t.name, el: si, box: box });
     li.appendChild(box);
     grid.appendChild(li);
     return;
@@ -734,7 +735,7 @@ TOOLS.forEach(function(t){
   if (t.note) meta.appendChild(div("note", t.note));
   a.className += " two"; a.style.setProperty("--c", t.color);
   var top = div("tmain"); top.appendChild(orb); top.appendChild(meta); a.appendChild(top);
-  var lt = div("lastbar"); a.appendChild(lt); tileInfo.push({ name: t.name, el: lt });
+  var lt = div("lastbar"); a.appendChild(lt); tileInfo.push({ name: t.name, el: lt, box: a });
   li.appendChild(a);
   grid.appendChild(li);
 });

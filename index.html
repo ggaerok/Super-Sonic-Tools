@@ -344,6 +344,12 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 .lastbar i,.sinfo i{align-self:center}
 .lastbar span,.sinfo span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.3;word-break:keep-all;overflow-wrap:anywhere}
 .tile.split.has-last{grid-template-rows:30px minmax(0,1fr) 32px;min-height:95px}
+/* 업데이트 현황 버튼 확대 */
+.upd-btn{top:116px;flex-direction:column;align-items:center;justify-content:center;gap:4px;height:auto;min-height:46px;padding:7px 16px 6px}
+.upd-btn .t1{display:inline-flex;align-items:center;gap:7px;font-size:15.5px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.upd-btn .dot{width:8px;height:8px}
+.upd-btn .t2{font-size:8px;font-weight:500;line-height:1;color:var(--muted);letter-spacing:0}
+@media (max-width:359px){.upd-btn{top:105px}}
 footer{
   margin-top:36px;
   text-align:center;
@@ -387,7 +393,7 @@ body{margin:0}
       <ellipse cx="60" cy="45" rx="56" ry="13" fill="none" stroke="var(--ring)" stroke-width="2.4" transform="rotate(-18 60 45)" clip-path="url(#front)"/>
     </svg>
     <p class="eyebrow" id="count">LINKS</p>
-    <button type="button" class="upd-btn" id="updBtn" aria-haspopup="dialog"><span class="dot" aria-hidden="true"></span>업데이트 현황</button>
+    <button type="button" class="upd-btn" id="updBtn" aria-haspopup="dialog"><span class="t1"><span class="dot" aria-hidden="true"></span>업데이트 현황</span><span class="t2">세부내역 보기</span></button>
     <h1>수퍼소닉<br>도구 모음</h1>
     <p class="lede">탭하면 새 탭에서 열립니다.</p>
   </header>

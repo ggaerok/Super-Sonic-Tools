@@ -266,10 +266,6 @@ a.q:hover,a.q:active{transform:translateY(-2px);border-color:var(--accent)}
 }
 
 @media (max-width:359px){.tile.long .orb{display:none}.tile.long .name{font-size:12.5px;line-height:1.2}}
-.tile.has-note{gap:7px;padding-top:6px;padding-bottom:6px}
-@media (max-width:419px){.tile.has-note .orb{display:none}}
-.tile.has-note .orb{width:32px;height:32px;font-size:17px}
-.tile.has-note .name{font-size:12.5px;line-height:1.2}
 .note{white-space:nowrap;margin-top:2px;font-size:10.5px;font-weight:700;line-height:1.2;letter-spacing:-.02em;color:var(--c-rose)}
 /* 업데이트 현황 */
 .upd-btn{
@@ -474,7 +470,8 @@ var TOOLS = [
   ] },
   { name: "코스믹코드 해독", url: "https://nysc-space-message-sol.vercel.app", icon: "💬", color: "var(--c-ember)" },
   { name: "코스믹코드 제작",     url: "https://nysc-space-message.vercel.app",     icon: "✉️", color: "var(--c-lagoon)" },
-  { name: "45도 거리 계산",     url: "https://20260716.vercel.app",               icon: "🚀", color: "var(--c-sun)" }
+  { name: "45도 거리 계산",     url: "https://20260716.vercel.app",               icon: "🚀", color: "var(--c-sun)" },
+  { name: "실시간 GPS",         url: "https://nysc-gps.ggaerok-kor.workers.dev/", icon: "📍", color: "var(--c-rose)", note: "시험중 사용금지" }
 ];
 
 /* QR 그림: 게임 진행(실행) 주소를 QR로 만든 PNG입니다. 주소가 바뀌면 새로 만들어 교체해야 합니다. */
@@ -760,7 +757,7 @@ TOOLS.forEach(function(t){
     return;
   }
   var a = document.createElement("a");
-  a.className = "tile" + (t.note ? " has-note" : "") + (t.name.length >= 12 ? " long" : "");
+  a.className = "tile" + (t.name.length >= 12 ? " long" : "");
   a.href = t.url; a.target = "_blank"; a.rel = "noopener noreferrer";
   a.setAttribute("aria-label", t.name + " 열기");
   var orb = div("orb", t.icon); orb.style.setProperty("--c", t.color);
